@@ -1,45 +1,60 @@
 import RPi.GPIO as GPIO
 import time
+
+# USE GPIO NUMBERS NOT PIN NUMBERS
 GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-TRIG = 24
-ECHO = 23
-buzzer = 18
+
+# PIN DEFINITION
+Buzzer = 18
+Triger = 23
+Echo = 24
 
 
-print(" Distance Measurement in progress")
+GPIO.setup(Triger, GPIO.OUT)
+GPIO.setup(Echo, GPIO.IN)
+GPIO.setup(Buzzer, GPIO.OUT)
 
-GPIO.setup(TRIG,GPIO.OUT)
-GPIO.setup(ECHO,GPIO.IN)
-GPIO.setup(buzzer,GPIO.OUT)
+# FUNCTIONS
+
+def dits():
+    GPIO.output(Triger, GPIO.HIGH)
+    time.sleep(0.0001)
+    GPIO.output(Triger, GPIO.LOW)
+    StartTime = time.time()
+    StopTime = time.time()
+    while GPIO.input(Echo) == 0:
+        StartTime = time.time()
+    while GPIO.input(Echo) == 1:
+        StopTime = time.time()
+        
+    TimeElapsed = StopTime - StartTime
+    # multiply with the sonic speed (34300 cm/s)
+    # and divide by 2, because there and back
+    dits = (TimeElapsed * 34300) / 2
+        
+
+    
+    return dits
+        
+    
+
+try:
+    while 1:
+        dis = dits()
+        
+        if dis >= 25 or dis <= 0:
+            GPIO.output(Buzzer, GPIO.LOW)
+            
+        else:
+            GPIO.output(Buzzer, GPIO.HIGH)
+            
+        time.sleep(0.001)
+        
+except KeyboardInterrupt:
+    GPIO.cleanup()
+    
 
 
 
-while True:
-    GPIO.output(TRIG, False)
 
-    time.sleep(1)
-
-    GPIO.output(TRIG, True)
-    time.sleep(0.01)
-    GPIO.output(TRIG, False)
-
-    while GPIO.input(ECHO)==0:
-        pulse_start=time.time()
-
-    while GPIO.input(ECHO)==1:
-        pulse_end=time.time()
-
-    pulse_duration = pulse_end - pulse_start
-
-    distance = pulse_duration*11150
-    distance = round(distance,2)
-
-    if distance > 20:
-        GPIO.output(buzzer, GPIO.LOW)
-
-        print("BUZZER OFF")
-    else:
-        GPIO.output(buzzer, GPIO.HIGH)
-        print("BUZZER ON")
 
