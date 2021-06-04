@@ -44,10 +44,10 @@ try:
         
         if dis >= 25 or dis <= 0:
             GPIO.output(Buzzer, GPIO.LOW)
-            print("There is no detect")
+            #print("There is no detect")
         else:
             GPIO.output(Buzzer, GPIO.HIGH)
-            print("There an object has been detected")
+            #print("There an object has been detected")
         time.sleep(0.001)
         
 except KeyboardInterrupt:
